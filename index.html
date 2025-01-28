@@ -1,18 +1,517 @@
-<!doctype html>
-<html lang="en-US">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Default Page Title</title>
-  <link rel="shortcut icon" href="favicon.ico">
-  <link rel="icon" href="favicon.ico">
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<!--[if lt IE 9]>
-  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-</head>
+  <meta charset="UTF-8" />
+  <title>Reveal and Reverse Reveal Animation</title>
+  <style>
+    .outer-text-block {
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #fff;
+      flex-direction: column;
+    }
 
+    .text-block {
+      display: inline-block;
+      width: 80%;
+      padding: 20px;
+      background: #222;
+      border-radius: 10px;
+      max-width: 80%;
+      margin-bottom: 20px;
+    }
+
+    .line-container {
+      padding-bottom: .5em;
+    }
+
+    .emptyline {
+        padding-bottom: 2em;
+    }
+
+    #measure {
+        opacity: 0;
+    }
+
+    .reveal-text span {
+      color: #ffffff;
+      opacity: 0;
+      display: inline-block;
+      animation: flash 0.5s forwards ease-in-out;
+
+    }
+
+    .reveal-text span.space {
+      display: inline-block;
+      width: 0.6em;
+      opacity: 1;
+    }
+
+    @keyframes flash {
+      0% {
+        opacity: 0;
+        text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff;
+      }
+      50% {
+        opacity: 1;
+        text-shadow: 0 0 10px #ffffff, 0 0 15px #ffffff, 0 0 20px #ffffff;
+      }
+      100% {
+        opacity: 1;
+        text-shadow: 0 0 0px #ffffff;
+      }
+    }
+
+/*    @keyframes reverseFlash {
+      0% {
+        opacity: 1;
+        text-shadow: 0 0 0px #6ed956;
+      }
+      50% {
+        opacity: 0.5;
+        color: #6ed956;
+        text-shadow: 0 0 10px #6ed956, 0 0 15px #6ed956, 0 0 20px #6ed956;
+      }
+      100% {
+        opacity: 0;
+        text-shadow: 0 0 5px #6ed956, 0 0 10px #6ed956, 0 0 15px #6ed956;
+      }
+    }*/
+
+    @keyframes reverseFlash {
+      0% {
+        opacity: 1;
+        text-shadow: 0 0 0px #868584;
+      }
+      50% {
+        opacity: 0.5;
+        color: #868584;
+        text-shadow: 0 0 10px #868584, 0 0 15px #868584, 0 0 20px #868584;
+      }
+      100% {
+        opacity: 0;
+        text-shadow: 0 0 5px #868584, 0 0 10px #868584, 0 0 15px #868584;
+      }
+    }
+
+    .btn-toggle {
+      background-color: #333;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .btn-toggle:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
 <body>
-  Welcome :-)
+
+  <div class="outer-text-block">
+
+    <p id="measure">R</p>
+
+    <div class="text-block">
+
+      <p class="reveal-text">Welcome to schneiderbauer.com
+
+       This website is primarily used for internal purposes, supporting the day-to-day operations of our legal practice. 
+
+       While it may not serve as a primary resource for client-facing information, we remain committed to providing exceptional legal services. 
+
+       For inquiries or assistance, please feel free to reach out to us directly:
+
+Email: frontdesk@schneiderbauer.com
+Phone: +43 8846 5556443
+      </p>
+    </div>
+
+    <button class="btn-toggle">Unreveal Text!</button>
+
+  </div>
+
+
+
+
+  <script>
+
+  // 但我得向你解釋，所有這些譴責快樂和頌揚痛苦的錯誤觀念是如何產生的。為此，我會向你一五一十地說明這一體系，並闡述偉大的真理探索者、人類幸福的傑出建設者的真實教義。沒有人因為快樂是快樂而拒絕、厭惡或迴避快樂本身，而是因為不知道如何理性地追求快樂的人會遭遇極其痛苦的後果。
+  // 也沒有人因痛苦是痛苦而喜歡或追求或渴望獲得痛苦本身，但也偶有辛勞和痛苦能帶來極大的快樂的情景。舉個微不足道的例子，若不是從中獲得好處，我們當中有誰會進行艱苦的體育鍛煉？但是，倘若沒有惱人的後果，誰有權利指責選擇享受快樂的人呢？或者倘若得不到相應快樂，誰能譴責選擇避免痛苦的人呢？    
+
+let firstRevealDuration = 0.4
+const revealDuration = 0.9 // 1.1
+const reverseDuration = 1.1
+
+// const autoUnRevealSecs = 30   // includes the length of the reveal animation
+// const autoRevealSecs = 10     // includes the length of the unreveal animation
+
+const autoUnRevealSecs = 0   // includes the length of the reveal animation
+const autoRevealSecs = 0     // includes the length of the unreveal animation
+
+
+let isRevealed = false;
+let resizeTimeout;
+
+let _innerHTML = ''
+let lineStartPositions = []
+
+let revealTimeout
+let reverseTimeout
+
+
+
+
+      function randomIntFromInterval(min, max) { // min and max included 
+        //return Math.floor(Math.random() * (max - min + 1) + min);
+        return Math.random() * (max - min + 1) + min;
+
+      }
+
+      function joinStringsWithPositions(strings) {
+          const joined = strings.join('');
+          const positions = [];
+          let currentPos = 0;
+          for (const str of strings) {
+              currentPos += str.length;
+              positions.push(currentPos);
+
+          }
+          return { joined, positions };
+      }
+
+
+      function doReveal() {
+
+          if (reverseTimeout)clearTimeout(reverseTimeout)
+          if (revealTimeout) clearTimeout(revealTimeout)
+ 
+          const spans = document.querySelectorAll('.reveal-text span');
+          const button = document.querySelector('.btn-toggle');
+
+
+          console.log('doReveal triggered, isRevealed', isRevealed , spans)
+
+
+          spans.forEach(span => {
+            span.style.opacity = 0;  // Ensure the text stays hidden
+          });
+
+
+          // Reveal animation
+          let curLine = 0
+          spans.forEach( (span, index) => {
+            span.style.animation = 'flash 0.5s forwards ease-in-out';
+            console.log('curLine:',curLine)
+            if (index > lineStartPositions[curLine]) curLine++;
+              
+            // makes the text disappear as a whole, not by paragraph
+            //const randomDelay = (Math.random() * 1.5);
+
+            //const randomDelay = curLine ? randomIntFromInterval( (curLine+1) * 1.3, + (curLine+1) * 1.3 + 1)
+            //                            : (Math.random() * 1.3) 
+
+            // const randomDelay = curLine ? randomIntFromInterval( (curLine+1) * 0.6, + (curLine+1) * 0.6 + 1)
+            //                             : (Math.random() * 1.3)                                         
+
+            const randomDelay = curLine 
+              ? randomIntFromInterval( (curLine+1) * revealDuration/2, + (curLine+1) * revealDuration/2 + 1)
+              : (Math.random() * revealDuration)
+
+            span.style.animationDelay = `${randomDelay}s`;
+          });
+          button.textContent = 'Unreveal Text'; // Change button text
+
+          isRevealed = true
+
+          console.log('doReveal done, isRevealed', isRevealed)
+          // why is animation starting after 3secs and not earlier?
+
+
+          if (autoUnRevealSecs) {
+            reverseTimeout = setTimeout( () => {
+
+              doUnReveal();
+              
+            }, autoUnRevealSecs * 1000);
+          }
+
+      }
+
+
+
+
+      function doUnReveal() {
+        
+          const spans = document.querySelectorAll('.reveal-text span');
+          const button = document.querySelector('.btn-toggle');
+
+          if (reverseTimeout)clearTimeout(reverseTimeout)
+          if (revealTimeout) clearTimeout(revealTimeout)
+
+
+          console.log('doUnReveal triggered, isRevealed', isRevealed, spans)
+
+
+
+          // Reverse animation
+
+          spans.forEach(span => {
+            span.style.opacity = 1;  // Ensure the text stays visible
+          });
+
+          let curLine = 0
+          spans.forEach( (span, index) => {
+            span.style.animation = 'reverseFlash '+reverseDuration+'s forwards ease-in-out';
+            console.log('curLine:',curLine)
+            if (index > lineStartPositions[curLine]) curLine++;
+
+            // makes the text disappear as a whole, not by paragraph
+            //const randomDelay = (Math.random() * reverseDuration);
+            const randomDelay = curLine 
+              ? randomIntFromInterval( (curLine+1) * revealDuration/2, + (curLine+1) * revealDuration/2 + 1)
+              : (Math.random() * revealDuration)
+
+            span.style.animationDelay = `${randomDelay}s`;
+          });
+          button.textContent = 'Reveal Text'; // Change button text  
+
+          isRevealed = false
+
+
+      if (autoRevealSecs) {
+
+        revealTimeout = setTimeout( () => {
+
+          doReveal();
+          
+        }, autoRevealSecs * 1000);
+      }
+        
+
+}
+
+
+
+window.addEventListener('resize', function(event) {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+        // Function to run after resizing has stopped for 1 second
+        console.log('Window resized');
+
+        const textElem = document.querySelector('.reveal-text');
+        textElem.innerHTML + _innerHTML
+
+        console.log('_innerHTML',_innerHTML)  
+
+        //isRevealed = false
+        //reveal() // endless loop
+    }, 1000);
+});
+
+
+window.addEventListener('load', function(event) {
+    // Function to run on page load
+    console.log('Page loaded');
+    reveal()
+});
+
+    async function reveal() {
+      const textElem = document.querySelector('.reveal-text');
+      const button = document.querySelector('.btn-toggle');
+
+
+
+      let html = textElem.innerHTML;
+      _innerHTML = html;
+
+      html = html.replace(/<br\s*\/?>/gi, '\n');
+      textElem.innerHTML = '';
+
+      const lineArr = html.split('\n').filter(line => line.length > 0);
+      const lineLenArr = lineArr.map(line => line.length)
+      const { joined, positions } = joinStringsWithPositions(lineArr);
+      console.log('joined:',joined)
+      console.log('positions:',positions)
+      lineStartPositions = positions
+
+      const lines = html.split('\n');
+
+
+
+      //const measureSpan = document.querySelector('span:not(:empty)');
+      const measureSpan = document.querySelector('#measure');
+
+      console.log('measureSpan',measureSpan)
+      // 9.6 x 18.5, depending on zoom level
+
+      const spanWidth = measureSpan.getBoundingClientRect().width;
+      console.log('spanWidth:',spanWidth)
+
+
+      const lineContainer = document.querySelector('.reveal-text')
+      // is the length of a single character..why?
+
+      const containerWidth = lineContainer.getBoundingClientRect().width;
+      console.log('containerWidth:',containerWidth)
+
+
+      const charsPerLine = Math.floor( containerWidth / spanWidth );
+      console.log('charsPerLine:',charsPerLine)
+
+      if (charsPerLine < 50) firstRevealDuration = firstRevealDuration * .7
+
+  
+
+
+      const wordwrapped = wordWrap(lines, charsPerLine-1);
+      console.log('wordwrapped:',wordwrapped)
+
+
+
+      //lines.forEach((line, lineIndex) => {
+      wordwrapped.forEach((line, lineIndex) => {
+
+        const lineContainer = document.createElement('div'); // was span befor
+        lineContainer.classList.add('line-container');
+
+        if (line.length === 0) {
+            lineContainer.classList.add('emptyline');
+            textElem.appendChild(lineContainer);
+            return;
+        }
+
+        lineContainer.classList.add('line-container');
+
+
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          const span = document.createElement('span');
+          if (char === ' ') {
+            span.classList.add('space');
+          } else {
+            span.innerText = char;
+          }
+          // const randomDelay = (Math.random() * 1.5 ); // no staggerec line reveal 
+          // const randomDelay = (Math.random() * 1.5 + lineIndex * 0.3); // also stagger line reveal 
+
+
+
+
+          // ??? not sure why delay 0 is not showing letters first...
+          // cause first letters were spaces..
+
+          //const randomDelay = i ? randomIntFromInterval( lineIndex * 0.3, + lineIndex * 0.3 + 1) : 0;
+
+          // const randomDelay = randomIntFromInterval( (lineIndex) * firstRevealDuration/2, (lineIndex+1) * firstRevealDuration/2 ) //+1
+
+          // const randomDelay = lineIndex ? randomIntFromInterval( (lineIndex+1) * firstRevealDuration/2, (lineIndex+1) * firstRevealDuration/2 ) //+1
+          //       : (Math.random() * firstRevealDuration * 0.8)    
+
+          // also good
+           // const randomDelay = lineIndex 
+           // ? randomIntFromInterval( (lineIndex+1) * firstRevealDuration/2, + (lineIndex+1) * firstRevealDuration/2 + 1)
+           //  : (Math.random() * firstRevealDuration)
+
+
+          // smoothest especially with firstRevealDuration set to 0.3
+          const randomDelay = randomIntFromInterval( lineIndex * firstRevealDuration, + lineIndex * firstRevealDuration + 1)
+
+
+
+          span.style.animationDelay = `${randomDelay}s`;
+          lineContainer.appendChild(span);
+        }
+        textElem.appendChild(lineContainer);
+        //textElem.appendChild(document.createElement('br'));
+      });
+
+      isRevealed = true; // To track if text is revealed or not
+
+
+
+// seens to remove leading space chars.. 
+      function wordWrap(strings, maxLen) {
+          const result = [];
+
+          strings.forEach(str => {
+              if (str.length <= maxLen) {
+                  result.push(str);
+              } else {
+                  let words = str.split(' ');
+                  let line = '';
+                  let prevWord = '';
+
+                  words.forEach(word => {
+
+                      if ((line + word).length <= maxLen) {
+                          if (word === '') line += ' ';
+                          else if (prevWord === '') line += word;
+                          else line += (line ? ' ' : '') + word;
+                      } else {
+                          if (line) {
+                              result.push(line);
+                          }
+                          // If single word is longer than maxLen, split the word
+                          if (word.length > maxLen) {
+                              let splitWord = word.match(new RegExp('.{1,' + maxLen + '}', 'g'));
+                              splitWord.forEach(part => result.push(part));
+                              line = '';
+                          } else {
+                              line = word;
+                          }
+                      }
+                      prevWord = word;
+                  });
+
+                  if (line) {
+                      result.push(line);
+                  }
+              }
+          });
+
+          return result;
+      }
+
+
+
+
+      if (autoUnRevealSecs) {
+
+        reverseTimeout = setTimeout( () => {
+
+          doUnReveal();
+          
+        }, autoUnRevealSecs * 1000);
+      }
+
+
+
+
+      button.addEventListener('click', () => {
+        const spans = document.querySelectorAll('.reveal-text span');
+        
+        if (isRevealed) {
+
+          doUnReveal();
+
+        } else {
+
+          doReveal();
+          
+        }
+
+        //isRevealed = !isRevealed; // Toggle the state
+      });
+    };
+  </script>
+
 </body>
 </html>
