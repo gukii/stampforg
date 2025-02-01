@@ -5,8 +5,8 @@
   <title>Reveal and Reverse Reveal Animation</title>
   <style>
     body {
-              background: black;
-              color: white;
+      background: black;
+      color: #ffffff;
     }
     .outer-text-block {
       font-family: 'Courier New', Courier, monospace;
@@ -14,7 +14,7 @@
       justify-content: center;
       align-items: center;
       /* height: 100vh; */
-      margin: 0;
+/*      margin: 0;*/
       background: #868584;
       flex-direction: column;
     }
@@ -22,18 +22,25 @@
     .text-block {
       display: inline-block;
       width: 30em;
-      padding: 20px;
+      padding: 5em;
       background: #222;
       border-radius: 10px;
       max-width: 80%;
-      margin-bottom: 20px;
+      margin-bottom: 5px;
 
-      margin-top: 20px;
+/*      margin-y: 3em;
+      margin-x: 3em;*/
 
+
+    }
+    .text-block p {
+      padding: 0px;
+      margin: 0px;
     }
 
     #measure {
         opacity: 0;
+        display: absolute;
     }
 
     @media only screen and (max-width: 990px) and (orientation: landscape) {
@@ -181,7 +188,6 @@
 
     <div class="text-block">
 
-      <span id="measure">R</span>
 
 
       <p class="reveal-text">Welcome to schneiderbauer.com
@@ -193,8 +199,9 @@
        For inquiries or assistance, please feel free to reach out to us directly:
 
 Email: frontdesk@schneiderbauer.com
-Phone: ++4388465556443
-      </p>
+Phone: ++4388465556443</p>
+
+      <span id="measure">R</span>
 
 
     </div>
