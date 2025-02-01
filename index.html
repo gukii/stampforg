@@ -29,6 +29,10 @@
       margin-bottom: 20px;
     }
 
+    #measure {
+        opacity: 0;
+    }
+
     @media only screen and (max-width: 990px) and (orientation: landscape) {
       .text-block {
         font-size: 190%;
@@ -57,9 +61,23 @@
         overflow-y: scroll;
 
 
+        font-weight: 500;
+
+      }
+
+      #measure {
+        opacity: 0;
+        font-weight: 500;
+      }
+
+      .reveal-text span.space {
+        display: inline-block;
+        font-weight: 500;
+        width: 0.6em;
+        opacity: 1;
       }
     }
-
+    
     .line-container {
       padding-bottom: .5em;
     }
@@ -68,9 +86,6 @@
         padding-bottom: 2em;
     }
 
-    #measure {
-        opacity: 0;
-    }
 
     .reveal-text span { 
       color: #ffffff;
@@ -97,6 +112,7 @@
       }
       100% {
         opacity: 1;
+        color: #ffffff;
         text-shadow: 0 0 0px #ffffff;
       }
     }
@@ -183,6 +199,11 @@ Phone: ++4388465556443
 
 
   <script>
+
+    // Phone: ++4388465556443
+    // Phone: ++43 8846 5556443, here browsers inject a <tel> tag
+    // ==> gotta refactor to allow tags inside the text..
+
 
   // 但我得向你解釋，所有這些譴責快樂和頌揚痛苦的錯誤觀念是如何產生的。為此，我會向你一五一十地說明這一體系，並闡述偉大的真理探索者、人類幸福的傑出建設者的真實教義。沒有人因為快樂是快樂而拒絕、厭惡或迴避快樂本身，而是因為不知道如何理性地追求快樂的人會遭遇極其痛苦的後果。
   // 也沒有人因痛苦是痛苦而喜歡或追求或渴望獲得痛苦本身，但也偶有辛勞和痛苦能帶來極大的快樂的情景。舉個微不足道的例子，若不是從中獲得好處，我們當中有誰會進行艱苦的體育鍛煉？但是，倘若沒有惱人的後果，誰有權利指責選擇享受快樂的人呢？或者倘若得不到相應快樂，誰能譴責選擇避免痛苦的人呢？    
